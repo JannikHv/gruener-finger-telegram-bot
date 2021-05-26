@@ -1,10 +1,4 @@
-export enum ConversationState {
-  NONE,
-  PLANT_ASK_NAME,
-  PLANT_ASK_WATER_INTERVAL,
-  PLANT_EDIT_CHOOSE,
-  PLANT_DELETE_CHOOSE
-};
+import { ConversationState } from 'src/types';
 
 export class ConversationService {
   private static instance: ConversationService;

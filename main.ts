@@ -1,8 +1,9 @@
 require('dotenv').config();
 
-import { ContextService, ConversationService, ConversationState } from 'src/services';
-import { Telegraf, Context } from 'telegraf';
+import { ContextService, ConversationService } from 'src/services';
 import { AppController, PlantController } from './src/controllers';
+import { ConversationState } from 'src/types';
+import { Telegraf, Context } from 'telegraf';
 
 const bot: Telegraf = new Telegraf(process.env.TOKEN);
 const contextService: ContextService = ContextService.getInstance();

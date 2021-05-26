@@ -1,6 +1,6 @@
 import { Context } from 'telegraf';
-import { ContextService, DatabaseService, ConversationService, ConversationState } from 'src/services';
-import { Plant } from 'src/types';
+import { ContextService, DatabaseService, ConversationService } from 'src/services';
+import { Plant, ConversationState } from 'src/types';
 
 export class PlantController {
   private static contextService: ContextService = ContextService.getInstance();
