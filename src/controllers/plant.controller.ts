@@ -22,16 +22,16 @@ export class PlantController {
     }
   }
 
-  public static onNew(context: Context): void {
+  public static async onNew(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
 
     this.conversationService.setUserState(userId, ConversationState.PLANT_NEW_ASK_NAME);
     this.conversationService.setUserData(userId, { });
 
-    context.reply('Wie heißt die Pflanze?');
+    await context.reply('Wie heißt die Pflanze?');
   }
 
-  public static onNewAskName(context: Context): void {
+  public static async onNewAskName(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const text: string = this.contextService.getText(context);
 
@@ -39,7 +39,7 @@ export class PlantController {
       this.conversationService.clearUserData(userId);
       this.conversationService.clearUserState(userId);
 
-      context.reply(`Du hast bereits eine Pflanze mit dem Namen ${text}`);
+      await context.reply(`Du hast bereits eine Pflanze mit dem Namen ${text}`);
     } else {
       this.conversationService.setUserData(userId, {
         ...this.conversationService.getUserData(userId),
@@ -47,16 +47,16 @@ export class PlantController {
       });
       this.conversationService.setUserState(userId, ConversationState.PLANT_NEW_ASK_WATER_INTERVAL);
 
-      context.reply('Wie oft muss sie gegossen werden? (Angabe in Tagen)');
+      await context.reply('Wie oft muss sie gegossen werden? (Angabe in Tagen)');
     }
   }
 
-  public static onNewAskWaterInterval(context: Context): void {
+  public static async onNewAskWaterInterval(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const interval: number = parseInt(this.contextService.getText(context));
 
     if (isNaN(interval)) {
-      context.reply('Das ist kein valider Nummernwert');
+      await context.reply('Das ist kein valider Nummernwert');
     } else {
       const plant: Plant = this.databaseService.createPlant({
         ...this.conversationService.getUserData(userId),
@@ -66,24 +66,24 @@ export class PlantController {
       this.conversationService.clearUserState(userId);
       this.conversationService.clearUserData(userId);
 
-      context.reply(`Deine Pflanze ${plant.name} wurde erstellt!`);
+      await context.reply(`Deine Pflanze ${plant.name} wurde erstellt!`);
     }
   }
 
-  public static onEdit(context: Context): void {
+  public static async onEdit(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const plants: Plant[] = this.databaseService.listPlants();
 
     this.conversationService.setUserState(userId, ConversationState.PLANT_EDIT_CHOOSE);
 
-    context.reply('Welche Pflanze willst du bearbeiten?', {
+    await context.reply('Welche Pflanze willst du bearbeiten?', {
       reply_markup: {
         keyboard: plants.map((p: Plant) => [Markup.button.callback(p.name, p.name)])
        }
     });
   }
 
-  public static onChooseToEdit(context: Context): void {
+  public static async onChooseToEdit(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const name: string = this.contextService.getText(context);
     const plant: Plant = this.databaseService.getPlantByName(name);
@@ -92,20 +92,20 @@ export class PlantController {
       this.conversationService.setUserData(userId, plant);
       this.conversationService.setUserState(userId, ConversationState.PLANT_EDIT_ASK_NAME);
 
-      context.reply('Wie heißt die Pflanze?', {
+      await context.reply('Wie heißt die Pflanze?', {
         reply_markup: { remove_keyboard: true }
       });
     } else {
       this.conversationService.clearUserData(userId);
       this.conversationService.clearUserState(userId);
 
-      context.reply('Es existiert keine Pflanze mit diesem Namen...', {
+      await context.reply('Es existiert keine Pflanze mit diesem Namen...', {
         reply_markup: { remove_keyboard: true }
       });
     }
   }
 
-  public static onEditAskName(context: Context): void {
+  public static async onEditAskName(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const text: string = this.contextService.getText(context);
 
@@ -115,15 +115,15 @@ export class PlantController {
     });
     this.conversationService.setUserState(userId, ConversationState.PLANT_EDIT_ASK_WATER_INTERVAL);
 
-    context.reply('Wie oft muss sie gegossen werden? (Angabe in Tagen)');
+    await context.reply('Wie oft muss sie gegossen werden? (Angabe in Tagen)');
   }
 
-  public static onEditAskWaterInterval(context: Context): void {
+  public static async onEditAskWaterInterval(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const interval: number = parseInt(this.contextService.getText(context));
 
     if (isNaN(interval)) {
-      context.reply('Das ist kein valider Nummernwert');
+      await context.reply('Das ist kein valider Nummernwert');
     } else {
       const plant: Plant = this.databaseService.updatePlant({
         ...this.conversationService.getUserData(userId),
@@ -133,18 +133,18 @@ export class PlantController {
       this.conversationService.clearUserState(userId);
       this.conversationService.clearUserData(userId);
 
-      context.reply(`Deine Pflanze ${plant.name} wurde gespeichert!`);
+      await context.reply(`Deine Pflanze ${plant.name} wurde gespeichert!`);
     }
   }
 
 
-  public static onDelete(context: Context): void {
+  public static async onDelete(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const plants: Plant[] = this.databaseService.listPlants();
 
     this.conversationService.setUserState(userId, ConversationState.PLANT_DELETE_CHOOSE);
 
-    context.reply('Welche Pflanze willst du löschen?', {
+    await context.reply('Welche Pflanze willst du löschen?', {
       reply_markup: {
         keyboard: plants.map((p: Plant) => [
           Markup.button.callback(p.name, p.name)
@@ -153,7 +153,7 @@ export class PlantController {
     });
   }
 
-  public static onChooseToDelete(context: Context): void {
+  public static async onChooseToDelete(context: Context): Promise<void> {
     const userId: number = this.contextService.getUserId(context);
     const name: string = this.contextService.getText(context);
     const plant: Plant = this.databaseService.getPlantByName(name);
@@ -163,14 +163,14 @@ export class PlantController {
       this.conversationService.clearUserData(userId);
       this.conversationService.clearUserState(userId);
 
-      context.reply(`Deine Pflanze ${plant.name} wurde gelöscht`, {
+      await context.reply(`Deine Pflanze ${plant.name} wurde gelöscht`, {
         reply_markup: { remove_keyboard: true }
       });
     } else {
       this.conversationService.clearUserData(userId);
       this.conversationService.clearUserState(userId);
 
-      context.reply('Da ist wohl etwas schiefgelaufen...', {
+      await context.reply('Da ist wohl etwas schiefgelaufen...', {
         reply_markup: { remove_keyboard: true }
       });
     }

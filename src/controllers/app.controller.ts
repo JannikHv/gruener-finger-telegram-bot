@@ -1,19 +1,20 @@
-import { ConversationService } from 'src/services';
+import { ConversationService, ContextService } from 'src/services';
 import { Context } from 'telegraf';
 
 export class AppController {
   private static conversationService: ConversationService = ConversationService.getInstance();
+  private static contextService: ContextService = ContextService.getInstance();
 
-  public static onStart(context: Context): void {
+  public static async onStart(context: Context): Promise<void> {
     context.reply('Willkommen!');
   }
 
-  public static onCancel(context: Context) {
-    const { id: userId } = context.from;
+  public static async onCancel(context: Context): Promise<void> {
+    const userId: number = this.contextService.getUserId(context);
 
     this.conversationService.clearUserData(userId);
     this.conversationService.clearUserState(userId);
 
-    context.reply('Abgebrochen');
+    await context.reply('Abgebrochen');
   }
 }
