@@ -5,11 +5,24 @@ export class ConversationService {
 
   private conversationStates: Map<number, ConversationState> = new Map();
   private conversationData: Map<number, any> = new Map();
+  private _isLocked: boolean = false;
 
   private constructor() { }
 
   public static getInstance(): ConversationService {
     return this.instance ?? (this.instance = new this());
+  }
+
+  public lock(): void {
+    this._isLocked = true;
+  }
+
+  public unlock(): void {
+    this._isLocked = false;
+  }
+
+  public isLocked(): boolean {
+    return this._isLocked;
   }
 
   public setUserState(userId: number, state: ConversationState): void {
