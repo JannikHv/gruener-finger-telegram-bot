@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 import { ContextService, ConversationService } from 'src/services';
-import { AppController, PlantController } from './src/controllers';
+import { AppController, PlantController } from 'src/controllers';
 import { ConversationState } from 'src/types';
 import { Telegraf, Context } from 'telegraf';
 
@@ -22,9 +22,11 @@ bot.on('message', (context: Context) => {
   const state: ConversationState = conversationService.getUserState(userId);
 
   switch (state) {
-    case ConversationState.PLANT_ASK_NAME: return PlantController.onAskName(context);
-    case ConversationState.PLANT_ASK_WATER_INTERVAL: return PlantController.onAskWaterInterval(context);
     case ConversationState.PLANT_EDIT_CHOOSE: return PlantController.onChooseToEdit(context);
+    case ConversationState.PLANT_EDIT_ASK_NAME: return PlantController.onEditAskName(context);
+    case ConversationState.PLANT_EDIT_ASK_WATER_INTERVAL: return PlantController.onEditAskWaterInterval(context);
+    case ConversationState.PLANT_NEW_ASK_NAME: return PlantController.onNewAskName(context);
+    case ConversationState.PLANT_NEW_ASK_WATER_INTERVAL: return PlantController.onNewAskWaterInterval(context);
     case ConversationState.PLANT_DELETE_CHOOSE: return PlantController.onChooseToDelete(context);
   }
 });

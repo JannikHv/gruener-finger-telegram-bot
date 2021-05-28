@@ -1,7 +1,7 @@
 
 import StormDB from 'stormdb';
-import { Plant } from 'src/types';
 import { v4 as uuidv4 } from 'uuid';
+import { Plant } from 'src/types';
 
 export class DatabaseService {
   private static instance: DatabaseService;
@@ -28,14 +28,19 @@ export class DatabaseService {
     return this.db.get('plants').get(id).value();
   }
 
+  public getPlantByName(name: string): Plant {
+    return this.listPlants().find((p: Plant) => p.name === name);
+  }
+
   public createPlant(plant: Partial<Plant>): Plant {
     plant.id = uuidv4();
 
     this.db.get('plants').set(plant.id, {
-      ...plant, createdAt: Date.now()
+      ...plant,
+      createdAt: Date.now()
     }).save();
 
-    return plant as Plant;
+    return this.getPlantById(plant.id);
   }
 
   public updatePlant(plant: Plant): Plant {
@@ -43,7 +48,7 @@ export class DatabaseService {
       ...plant, updatedAt: Date.now()
     }).save();
 
-    return plant;
+    return this.getPlantById(plant.id);
   }
 
   public deletePlant(plant: Plant): void {
